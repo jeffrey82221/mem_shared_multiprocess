@@ -51,6 +51,9 @@ def multiprocess_map(func, array, **kwargs):
     Args: 
         - func : function to be apply to array[i] 
         - array : a numpy array. 
+        
+    Notes: 
+        - pid_records: records whether a child is finished. 
     
     TODO: 
     - [X] make sure all child is stopped before existing the parent function 
@@ -63,9 +66,9 @@ def multiprocess_map(func, array, **kwargs):
     - [ ] read as 'c' mode (write read availble on ram but read only on disk) 
     - [ ] remove the file once calculation done. 
     """
-    process_cnt = len(mmap_array)
-    # pid_records records whether a child is finished. 
+    process_cnt = len(array)
     pid_records = mmap.mmap(-1, length=process_cnt, access=mmap.ACCESS_WRITE)
+    
     for i in range(process_cnt):
         pid = os.fork()
         if pid == 0:
@@ -76,7 +79,7 @@ def multiprocess_map(func, array, **kwargs):
             pass 
     while pid_records[:] != b'\x01' * process_cnt:
         continue
-    return mmap_array
+    return array
 
 from tempfile import mkdtemp
 import mmap
