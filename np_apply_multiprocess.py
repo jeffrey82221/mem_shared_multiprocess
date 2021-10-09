@@ -22,7 +22,10 @@ import sys
 import psutil
 import mmap
 import time 
-CPU_CNT = os.cpu_count()
+from tempfile import mkdtemp
+import os.path as path
+import numpy as np 
+
 def slice_generator(array, cpu_cnt = 1):
     assert cpu_cnt >= 1
     size = int(np.ceil(len(fp)/cpu_cnt))
@@ -58,7 +61,7 @@ def multiprocess_map(func, array, **kwargs):
     TODO: 
     - [X] make sure all child is stopped before existing the parent function 
     - [X] Input function, fix args to the function, mem array, and determine process count using array size.  
-    - [ ] detemine process count using cpu count 
+    - [X] detemine process count using cpu count 
     - [ ] error handling: 
         - [ ] what if pid is negative? how to handle? 
         - [ ] make sure input is invariate to avoid change to the input when error happended. 
@@ -66,27 +69,23 @@ def multiprocess_map(func, array, **kwargs):
     - [ ] read as 'c' mode (write read availble on ram but read only on disk) 
     - [ ] remove the file once calculation done. 
     """
-    process_cnt = len(array)
+    process_cnt = os.cpu_count()
     pid_records = mmap.mmap(-1, length=process_cnt, access=mmap.ACCESS_WRITE)
     
-    for i in range(process_cnt):
+    for i, sub_array in enumerate(slice_generator(array, cpu_cnt = process_cnt)):
         pid = os.fork()
         if pid == 0:
-            func(array[i], **kwargs)
+            sub_array = np.apply_along_axis(
+                func, 1, sub_array, **kwargs)
             pid_records[i] = 1
-            sys.exit()
+            os._exit(1)
         else:
             pass 
     while pid_records[:] != b'\x01' * process_cnt:
         continue
     return array
 
-from tempfile import mkdtemp
-import mmap
-import time
-import os
-import os.path as path
-import numpy as np 
+
 
 def assign_position(element, plus_number = 1):
     element += plus_number
@@ -97,14 +96,14 @@ if __name__ == '__main__':
 
     input_a = np.zeros((10,4))
     
-    ans_single_cpu = np.apply_along_axis(assign_position, 1, input_a, plus_number = 1)
-    print(ans_single_cpu)
+    ans_single_cpu = np.apply_along_axis(assign_position, 1, input_a, plus_number = 2)
+    print('Single CPU:\n', ans_single_cpu)
     
     input_a = np.zeros((10,4))
     filename = path.join(mkdtemp(), 'tmp_numpy.dat')
     fp = np.memmap(filename, dtype=input_a.dtype, mode='w+', shape=input_a.shape)
     fp[:] = input_a[:]
-    print('Start MultiProcess')
-    ans = multiprocess_map(assign_position, fp, plus_number = 1)
-    print('End MultiProcess')
+    print('MultiProcess:\n')
+    ans = multiprocess_map(assign_position, fp, plus_number = 2)
     print(ans)
+    
