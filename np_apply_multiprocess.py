@@ -8,12 +8,12 @@ Build Multiprocess Apply for Numpy Array
     - [X] child execute the function 
     - [X] child sys.exit after done 
     - [X] parent record child process id into mmap
-- [ ] Develop numpy multicore function apply. 
-    - [ ] Split numpy by CPU count rather than creating process for each element. 
-    - [ ] convertion of numpy to numpy memmap (check speed) 
-    - [ ] Research numpy abritrary function apply along axis. 
-    - [ ] Allow inplace numpy transform using this module (numpy to write allow mmap)
-    - [ ] Allow numpy to numpy transform using this module (numpy to readonly mmap + empty write allow mmap)
+- [X] Develop numpy multicore function apply. 
+    - [X] Split numpy by CPU count rather than creating process for each element. 
+    - [X] convertion of numpy to numpy memmap (check speed) 
+    - [X] Research numpy abritrary function apply along axis. 
+    - [X] Allow numpy to numpy transform using this module (numpy to readonly mmap + empty write allow mmap)
+- [ ] Testing the speed of the numpy apply function 
 - [ ] Develop pandas multicore function apply 
 
 """
