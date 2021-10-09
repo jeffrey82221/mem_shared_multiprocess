@@ -71,7 +71,7 @@ def multiprocess_map(func, array, **kwargs):
     """
     process_cnt = os.cpu_count()
     pid_records = mmap.mmap(-1, length=process_cnt, access=mmap.ACCESS_WRITE)
-    
+    pids = []
     for i, sub_array in enumerate(slice_generator(array, cpu_cnt = process_cnt)):
         pid = os.fork()
         if pid == 0:
@@ -79,8 +79,12 @@ def multiprocess_map(func, array, **kwargs):
                 func, 1, sub_array, **kwargs)
             pid_records[i] = 1
             os._exit(1)
+        elif pid < 0:
+            for _pid in pids:
+                os.kill(_pid, 9)
+            raise ValueError(f'{i}th process creation failed')
         else:
-            pass 
+            pids.append(pid)
     while pid_records[:] != b'\x01' * process_cnt:
         continue
     return array
