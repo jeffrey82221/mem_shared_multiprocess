@@ -88,18 +88,23 @@ import os
 import os.path as path
 import numpy as np 
 
-def assign_position(element):
-    element += 2
+def assign_position(element, plus_number = 1):
+    element += plus_number
     element[0] = element[1] + element[2]
-    element[:] = element[:] + element ** 2
+    return element
     
 if __name__ == '__main__':
 
+    input_a = np.zeros((10,4))
+    
+    ans_single_cpu = np.apply_along_axis(assign_position, 1, input_a, plus_number = 1)
+    print(ans_single_cpu)
+    
     input_a = np.zeros((10,4))
     filename = path.join(mkdtemp(), 'tmp_numpy.dat')
     fp = np.memmap(filename, dtype=input_a.dtype, mode='w+', shape=input_a.shape)
     fp[:] = input_a[:]
     print('Start MultiProcess')
-    ans = multiprocess_map(assign_position, fp)
+    ans = multiprocess_map(assign_position, fp, plus_number = 1)
     print('End MultiProcess')
     print(ans)
