@@ -55,7 +55,7 @@ def create_share_mem_array(array):
     #del fp 
     #gc.collect()
     #fp = np.memmap(filename, dtype=array.dtype, mode='c', shape=array.shape)
-    return fp
+    return fp, filename
 
 def multiprocess_map(func, input_array, **kwargs):
     """
@@ -76,11 +76,10 @@ def multiprocess_map(func, input_array, **kwargs):
     - [X] error handling: 
         - [X] what if pid is negative? how to handle? 
         - [X] make sure input is invariate to avoid change to the input when error happended. 
-    - [ ] save empty numpy to file 
-    - [ ] read as 'c' mode (write read availble on ram but read only on disk) 
-    - [ ] remove the file once calculation done. 
+    - [X] save empty numpy to file 
+    - [X] remove the file once calculation done. 
     """
-    array = create_share_mem_array(input_array)
+    array, filename = create_share_mem_array(input_array)
     process_cnt = os.cpu_count()
     pid_records = mmap.mmap(-1, length=process_cnt, access=mmap.ACCESS_WRITE)
     pids = []
@@ -99,7 +98,11 @@ def multiprocess_map(func, input_array, **kwargs):
             pids.append(pid)
     while pid_records[:] != b'\x01' * process_cnt:
         continue
-    return array
+    result = np.array(array)
+    os.remove(filename)
+    del array
+    gc.collect()
+    return result
 
 
 
