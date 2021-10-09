@@ -14,6 +14,8 @@ Build Multiprocess Apply for Numpy Array
     - [X] Research numpy abritrary function apply along axis. 
     - [X] Allow numpy to numpy transform using this module (numpy to readonly mmap + empty write allow mmap)
 - [ ] Testing the speed of the numpy apply function 
+    - [X] On mac (not faster) 
+    - [ ] On AiCloud 
 - [ ] Develop pandas multicore function apply 
 
 """
