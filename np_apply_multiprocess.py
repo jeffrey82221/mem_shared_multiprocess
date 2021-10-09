@@ -104,12 +104,6 @@ def multiprocess_map(func, input_array, **kwargs):
     gc.collect()
     return result
 
-
-
-def assign_position(element, plus_number = 1):
-    element += plus_number
-    element[0] = element[1] + element[2]
-    return element
     
 if __name__ == '__main__':
 
