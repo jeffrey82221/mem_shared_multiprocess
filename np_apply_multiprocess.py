@@ -22,8 +22,26 @@ import sys
 import psutil
 import mmap
 import time 
-
 CPU_CNT = os.cpu_count()
+def slice_generator(array, cpu_cnt = 1):
+    assert cpu_cnt >= 1
+    size = int(np.ceil(len(fp)/cpu_cnt))
+    i = 0 
+    while True:
+        try:
+            ans = array[i: i + size]
+            if len(ans) == size:
+                yield ans 
+            else:
+                raise ValueError('size not enough')
+            i += size
+        except:
+            break
+    ans = array[i:]
+    if len(ans) > 0:
+        yield ans 
+    else:
+        pass
 
 def multiprocess_map(func, array, **kwargs):
     """
