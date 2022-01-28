@@ -14,14 +14,26 @@ from lightgbm import LGBMClassifier
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+import sharedmem
+def to_shared(array):
+    fp = sharedmem.empty(array.shape, dtype=array.dtype)
+    fp[:] = array[:]
+    return fp
 
 dataset = pd.read_csv('Book_Purchased.csv')
 dataset['Purchased'] = dataset['Purchased'].astype('str')
+print(f'Dataset: {dataset.head(5)}')
 dx = dataset.iloc[:, [2, 3, 4]].values
 dy = dataset.iloc[:, 5].values
 dx = PCA(n_components=2).fit_transform(dx)
 dx = StandardScaler().fit_transform(dx)
+print(f'dx: {dx}')
+print(f'dy: {dy}')
 dx_train, dx_test, dy_train, dy_test = train_test_split(dx, dy, test_size=0.2, random_state=0)
+dx_train = to_shared(dx_train)
+dx_test = to_shared(dx_test)
+dy_train = to_shared(dy_train)
+dy_test = to_shared(dy_test)
 
 # 建立不同模型
 models = [
@@ -37,6 +49,9 @@ models = [
 # 訓練不同模型
 for i, _ in enumerate(models):
     models[i].fit(dx_train, dy_train)
+print('FINISH TRAINING OF MODELS')
+
+
 plt.rcParams['font.size'] = 12
 plt.figure(figsize=(8, 8))
 # 建立子圖表

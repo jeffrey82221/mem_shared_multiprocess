@@ -10,5 +10,6 @@ Memory Sharing Multiprocessing Tool for Parallelizing Function Apply on Large Py
   - [X] Use SharedDataFrame with billiard
 - [ ] Shared Memory for AutoML (parallel computation)
   - [X] Make sure sharedmem work with sklearn models (in grid_search)
-  - [ ] Make sure SharedDataFrame work with all models (sklearn + xgboost + lightgbm) (see ml_models.py)
+  - [X] Make sure sharedmem work with all models (sklearn + xgboost + lightgbm) (see ml_models.py)
+  - [ ] Make sure SharedDataFrame work with xgboost!
   - [ ] Build my own version of parallel grid search!
