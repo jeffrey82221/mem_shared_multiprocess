@@ -29,6 +29,7 @@ from tempfile import mkdtemp
 import os.path as path
 import numpy as np 
 import sharedmem
+import logging
 # https://github.com/rainwoodman/sharedmem
 
 def slice_generator(array, cpu_cnt = 1):
@@ -85,16 +86,23 @@ def multiprocess_map(func, input_array, **kwargs):
     - [X] save empty numpy to file 
     - [X] remove the file once calculation done. 
     """
+    process_cnt=10
+    print('Start Creating Shared Memory')
     array = create_share_mem_array(input_array)
-    process_cnt = os.cpu_count()
+    
     pid_records = mmap.mmap(-1, length=process_cnt, access=mmap.ACCESS_WRITE)
+    print(f'CPU Count: {process_cnt}')
+    print(f'pid_records: {pid_records[:]}')
+    print(f'length pid_records: {len(pid_records[:])}')
     pids = []
     for i, sub_array in enumerate(slice_generator(array, cpu_cnt = process_cnt)):
         pid = os.fork()
         if pid == 0:
+            print(f'process {os.getpid()} start')
             sub_array[:] = np.apply_along_axis(
                 func, 1, sub_array, **kwargs)
             pid_records[i] = 1
+            print(f'process {os.getpid()} end')
             os._exit(1)
         elif pid < 0:
             for _pid in pids:
@@ -103,6 +111,8 @@ def multiprocess_map(func, input_array, **kwargs):
         else:
             pids.append(pid)
     while pid_records[:] != b'\x01' * process_cnt:
+        print(f"pid_records: {pid_records[:]}")
+        time.sleep(0.1)
         continue
     result = np.array(array)
     del array
