@@ -29,6 +29,11 @@ class SharedDataFrame:
             table[col] = self.__values[col].tolist()
         return table
 
+    def __del__(self):
+        for col in self.__cols.tolist():
+            del self.__values[col]
+        del self.__cols
+
 if __name__ == '__main__':
     data = [['Y', 'N', 'N', 'N', 'N', 'N', 'N', 1],
              ['N', 'Y', 'N', 'N', 'N', 'N', 'N', 1],
