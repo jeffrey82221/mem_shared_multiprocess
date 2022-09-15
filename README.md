@@ -13,3 +13,7 @@ Memory Sharing Multiprocessing Tool for Parallelizing Function Apply on Large Py
   - [X] Make sure sharedmem work with all models (sklearn + xgboost + lightgbm) (see ml_models.py)
   - [ ] Make sure SharedDataFrame work with xgboost!
   - [ ] Build my own version of parallel grid search!
+- [ ] Try experimenting with Ray tune
+  - [ ] Run tutorial 
+  - [ ] Study the usage 
+  - [ ] Fix compatibility
