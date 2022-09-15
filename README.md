@@ -8,6 +8,8 @@ Memory Sharing Multiprocessing Tool for Parallelizing Function Apply on Large Py
 - [X] Allow sharing of Pandas DataFrame between processes created by billiard
   - [X] SharedDataFrame class implemented (pd_share.py)
   - [X] Use SharedDataFrame with billiard
+- [ ] Explain the code of this repo in README. (installation / run) 
+- [ ] Build multi-thread version parallelism code using `rust` language
 - [ ] Shared Memory for AutoML (parallel computation)
   - [X] Make sure sharedmem work with sklearn models (in grid_search)
   - [X] Make sure sharedmem work with all models (sklearn + xgboost + lightgbm) (see ml_models.py)
